@@ -1,0 +1,13 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
+
+button {
+  color: #0E093E; /* dark blue */
+  background: #C2FFC7; /* light green */
+}
+
