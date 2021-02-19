@@ -2,6 +2,10 @@ let ROWS = 20;
 let COLS = 20;
 let SHAPE_SIZE = 20;
 
+let prev_rows = ROWS;
+let prev_cols = COLS;
+let prevShapeSize = SHAPE_SIZE;
+
 // UI DOM ELEMENTS
 let rowSlider;
 let columnSlider;
@@ -19,32 +23,50 @@ let theme3 = [];
 let PALETTE = [];
 
 // LAYOUT
-let MARGIN;
-let PADDING;
+// let MARGIN;
+// let PADDING;
 
-let GRIDBOX;
-let START;
+// let GRIDBOX;
+// let START;
 
-let totalX;
-let totalY;
+// let totalX;
+// let totalY;
+
+let MARGIN = SHAPE_SIZE * 4;
+let PADDING = SHAPE_SIZE * 0.2;
+
+let GRIDBOX = SHAPE_SIZE + PADDING;
+let START = SHAPE_SIZE + MARGIN;
+
+let totalX = START + MARGIN + GRIDBOX * COLS;
+let totalY = START + MARGIN + GRIDBOX * ROWS;
+
+// SHAPES
+const shapes = [];
 
 function setup() {
+  pixelDensity(1);
   colorMode(HSB);
 
-  // UI DOM ELEMENTS
-  const ui = createDiv();
+  let maxRows = ceil((windowHeight - (START + MARGIN)) / GRIDBOX);
+  let maxCols = floor((windowWidth - (START + MARGIN + 350)) / GRIDBOX);
 
-  rowSlider = createSlider(1, 50, 20, 1).parent(ui);
-  colSlider = createSlider(1, 50, 20, 1).parent(ui);
-  shapeSizeSlider = createSlider(10, 30, 20, 1).parent(ui);
+  // UI DOM ELEMENTS
+  const ui = createDiv().class("control-panel");
+
+  rowSlider = createSlider(2, maxRows, 10, 1).parent(ui);
+  colSlider = createSlider(2, maxCols, 10, 1).parent(ui);
+  // shapeSizeSlider = createSlider(10, 30, 10, 1).parent(ui);
 
   primaryColorPicker = createColorPicker(color(245, 85, 25)).parent(ui);
   secondaryColorPicker = createColorPicker(color(160, 55, 75)).parent(ui);
   backgroundColorPicker = createColorPicker(color(125, 25, 100)).parent(ui);
 
   // LAYOUT
-  calculateLayout();
+  // calculateLayout();
   createCanvas(totalX, totalY, SVG);
+
+  console.log(windowWidth);
 
   // MODES
   rectMode(CENTER);
@@ -69,8 +91,10 @@ function setup() {
     color(65, 30, 85), // light yellow
   ];
 
-  // PALETTE = dynamicTheme;
   calculatePalette();
+
+  // SHAPES
+  generateShapes();
 }
 
 function draw() {
@@ -78,8 +102,22 @@ function draw() {
   calculateLayout();
   resizeCanvas(totalX, totalY);
 
+  // COLOR
   calculatePalette();
   background(PALETTE[2]);
+  noFill();
+  noStroke();
+
+  // generateShapes();
+
+  // SHAPE GRID
+  shapes.forEach((shape) => {
+    push();
+    translate(shape.x, shape.y);
+    shape.update();
+    shape.render();
+    pop();
+  });
 
   // BORDER
   push();
@@ -88,9 +126,6 @@ function draw() {
   translate(width / 2, height / 2);
   rect(0, 0, totalX - MARGIN, totalY - MARGIN);
   pop();
-
-  // GRID
-  // createGrid(colSlider.value(), rowSlider.value());
 
   // noLoop();
 }
@@ -120,7 +155,6 @@ function drawShape(posX, posY) {
     stroke(color);
   }
 
-  // let rand = randomSlider.value();
   const shapeSelection = floor(random(3));
 
   translate(posX, posY);
@@ -136,8 +170,29 @@ function drawShape(posX, posY) {
   }
 }
 
+function generateShapes() {
+  shapes.splice(0, shapes.length);
+
+  for (let x = 0; x < COLS; x++) {
+    for (let y = 0; y < ROWS; y++) {
+      const posX = START + x * GRIDBOX;
+      const posY = START + y * GRIDBOX;
+
+      shapes.push(new Shape(posX, posY));
+    }
+  }
+}
+
 function calculateLayout() {
-  SHAPE_SIZE = shapeSizeSlider.value();
+  ROWS = rowSlider.value();
+  COLS = colSlider.value();
+
+  if (evaluateResize()) {
+    generateShapes();
+  }
+
+  prev_rows = ROWS;
+  prev_cols = COLS;
 
   MARGIN = SHAPE_SIZE * 4;
   PADDING = SHAPE_SIZE * 0.2;
@@ -145,16 +200,25 @@ function calculateLayout() {
   GRIDBOX = SHAPE_SIZE + PADDING;
   START = SHAPE_SIZE + MARGIN;
 
-  totalX = START + MARGIN + GRIDBOX * colSlider.value();
-  totalY = START + MARGIN + GRIDBOX * rowSlider.value();
+  totalX = START + MARGIN + GRIDBOX * COLS;
+  totalY = START + MARGIN + GRIDBOX * ROWS;
 }
 
 function calculatePalette() {
   dynamicTheme = [
-    primaryColorPicker.value(),
-    secondaryColorPicker.value(),
-    backgroundColorPicker.value(),
+    primaryColorPicker.color(),
+    secondaryColorPicker.color(),
+    backgroundColorPicker.color(),
   ];
 
   PALETTE = dynamicTheme;
+}
+
+function evaluateResize() {
+  if (prev_rows != ROWS) {
+    return true;
+  }
+  if (prev_cols != COLS) {
+    return true;
+  }
 }

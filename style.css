@@ -2,8 +2,12 @@ html,
 body {
   margin: 0;
   padding: 0;
+}
+
+body {
+  height: 100vh;
   display: grid;
-  grid-template-columns: minmax(auto, 1fr) 400px;
+  grid-template-columns: auto 350px;
 }
 
 #defaultCanvas0 {
@@ -12,6 +16,12 @@ body {
   margin-left: auto;
   margin-right: auto;
   display: block;
+}
+
+.control-panel {
+  padding: 20px;
+
+  background: #0e093e;
 }
 
 button {

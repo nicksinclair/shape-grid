@@ -5,13 +5,13 @@ function pointOnCircle(posX, posY, radius, angle) {
   return createVector(x, y);
 }
 
-
+// Draws a right triangle
 function rightTriangle(posX, posY, length) {
   beginShape();
   const a = createVector(posX + length / 2, posY + length / 2);
   const b = createVector(posX - length / 2, posY + length / 2);
   const c = createVector(posX - length / 2, posY - length / 2);
-  
+
   vertex(a.x, a.y);
   vertex(b.x, b.y);
   vertex(c.x, c.y);
@@ -34,9 +34,9 @@ function hexagon(posX, posY, radius) {
 function randomSelectTwo() {
   // Number of Lines
   const rand = random(1);
-  
+
   if (rand < 0.5) {
-    return true
+    return true;
   } else {
     return false;
   }
@@ -48,6 +48,7 @@ function getRandomFromPalette() {
   return PALETTE[rand];
 }
 
+// Applies a random rotation
 function applyRotation() {
   const angle = floor(random(4));
   rotate(angle * 90);
