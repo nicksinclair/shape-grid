@@ -1,15 +1,17 @@
+p5.disableFriendlyErrors = true;
+
 let ROWS = 20;
 let COLS = 20;
-let SHAPE_SIZE = 20;
+let SHAPE_SIZE = 30;
 
 let prev_rows = ROWS;
 let prev_cols = COLS;
-let prevShapeSize = SHAPE_SIZE;
+// let prevShapeSize = SHAPE_SIZE;
 
 // UI DOM ELEMENTS
 let rowSlider;
 let columnSlider;
-let shapeSizeSlider;
+// let shapeSizeSlider;
 
 let primaryColorPicker;
 let secondaryColorPicker;
@@ -17,21 +19,9 @@ let backgroundColorPicker;
 
 // THEMES
 let dynamicTheme = [];
-let theme1 = [];
-let theme2 = [];
-let theme3 = [];
 let PALETTE = [];
 
 // LAYOUT
-// let MARGIN;
-// let PADDING;
-
-// let GRIDBOX;
-// let START;
-
-// let totalX;
-// let totalY;
-
 let MARGIN = SHAPE_SIZE * 4;
 let PADDING = SHAPE_SIZE * 0.2;
 
@@ -52,44 +42,60 @@ function setup() {
   let maxCols = floor((windowWidth - (START + MARGIN + 350)) / GRIDBOX);
 
   // UI DOM ELEMENTS
+  // parent UI element
   const ui = createDiv().class("control-panel");
 
-  rowSlider = createSlider(2, maxRows, 10, 1).parent(ui);
-  colSlider = createSlider(2, maxCols, 10, 1).parent(ui);
-  // shapeSizeSlider = createSlider(10, 30, 10, 1).parent(ui);
+  // labels
+  const rowLabel = createDiv("ROWS").class("label").parent(ui);
+  const colLabel = createDiv("COLUMNS").class("label").parent(ui);
 
-  primaryColorPicker = createColorPicker(color(245, 85, 25)).parent(ui);
-  secondaryColorPicker = createColorPicker(color(160, 55, 75)).parent(ui);
-  backgroundColorPicker = createColorPicker(color(125, 25, 100)).parent(ui);
+  const primaryLabel = createDiv("PRIMARY COLOR").class("label").parent(ui);
+  const secondaryLabel = createDiv("SECONDARY COLOR").class("label").parent(ui);
+  const backgroundLabel = createDiv("BACKGROUND COLOR")
+    .class("label")
+    .parent(ui);
+
+  // sliders
+  rowSlider = createSlider(2, maxRows, 10, 1).class("slider").parent(rowLabel);
+  colSlider = createSlider(2, maxCols, 10, 1).class("slider").parent(colLabel);
+  // shapeSizeSlider = createSlider(10, 30, 10, 1).class("slider").parent(ui);
+
+  // color pickers
+  primaryColorPicker = createColorPicker(color(245, 85, 25))
+    .class("color-picker")
+    .parent(primaryLabel);
+  secondaryColorPicker = createColorPicker(color(160, 55, 75))
+    .class("color-picker")
+    .parent(secondaryLabel);
+  backgroundColorPicker = createColorPicker(color(125, 25, 100))
+    .class("color-picker")
+    .parent(backgroundLabel);
 
   // LAYOUT
-  // calculateLayout();
   createCanvas(totalX, totalY, SVG);
-
-  console.log(windowWidth);
 
   // MODES
   rectMode(CENTER);
   angleMode(DEGREES);
 
   // COLOR
-  theme1 = [
-    color(245, 85, 25), // dark blue
-    color(160, 55, 75), // green
-    color(125, 25, 100), // light green
-  ];
+  // const theme1 = [
+  //   color(245, 85, 25), // dark blue
+  //   color(160, 55, 75), // green
+  //   color(125, 25, 100), // light green
+  // ];
 
-  theme2 = [
-    color(275, 85, 30), // purple
-    color(312, 30, 80), // pink
-    color(288, 10, 100), // lavender
-  ];
+  // const theme2 = [
+  //   color(275, 85, 30), // purple
+  //   color(312, 30, 80), // pink
+  //   color(288, 10, 100), // lavender
+  // ];
 
-  theme3 = [
-    color(25, 85, 70), // orange
-    color(58, 85, 70), // yellow
-    color(65, 30, 85), // light yellow
-  ];
+  // const theme3 = [
+  //   color(25, 85, 70), // orange
+  //   color(58, 85, 70), // yellow
+  //   color(65, 30, 85), // light yellow
+  // ];
 
   calculatePalette();
 
@@ -100,15 +106,12 @@ function setup() {
 function draw() {
   // LAYOUT
   calculateLayout();
-  resizeCanvas(totalX, totalY);
 
   // COLOR
   calculatePalette();
   background(PALETTE[2]);
   noFill();
   noStroke();
-
-  // generateShapes();
 
   // SHAPE GRID
   shapes.forEach((shape) => {
@@ -127,6 +130,7 @@ function draw() {
   rect(0, 0, totalX - MARGIN, totalY - MARGIN);
   pop();
 
+  // uncomment to stop interactivity
   // noLoop();
 }
 
@@ -188,6 +192,7 @@ function calculateLayout() {
   COLS = colSlider.value();
 
   if (evaluateResize()) {
+    console.log("resize");
     generateShapes();
   }
 
@@ -202,6 +207,8 @@ function calculateLayout() {
 
   totalX = START + MARGIN + GRIDBOX * COLS;
   totalY = START + MARGIN + GRIDBOX * ROWS;
+
+  resizeCanvas(totalX, totalY);
 }
 
 function calculatePalette() {
