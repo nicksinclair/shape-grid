@@ -34,11 +34,23 @@ body {
 .color-picker {
   display: block;
   width: 100%;
+  height: 5ch;
+  border: none;
 }
 
 button {
+  width: 100%;
+  height: 5ch;
+  border: none;
+  font-family: inherit;
+  font-size: 1em;
+  text-decoration: none;
   color: #0e093e; /* dark blue */
   background: #c2ffc7; /* light green */
+}
+
+button:hover {
+  background: #55be9b; /* green */
 }
 
 input[type="range"] {

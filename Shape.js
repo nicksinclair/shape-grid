@@ -17,16 +17,7 @@ class Shape {
       stroke(this.color);
     }
 
-    if (this.shape == 0) {
-      rect(0, 0, this.shapeSize);
-    } else if (this.shape == 1) {
-      ellipse(0, 0, this.shapeSize);
-    } else if (this.shape == 2) {
-      rotate(this.transform * 90);
-      rightTriangle(0, 0, this.shapeSize);
-    } else {
-      // skip drawing a shape
-    }
+    renderShape(this.shape, this.shapeSize, this.transform);
   }
 
   update() {

@@ -1,24 +1,29 @@
 p5.disableFriendlyErrors = true;
 
-let ROWS = 20;
-let COLS = 20;
-let SHAPE_SIZE = 30;
+let ROWS = 10;
+let COLS = 10;
+let SHAPE_SIZE = 50;
 
 let prev_rows = ROWS;
 let prev_cols = COLS;
 // let prevShapeSize = SHAPE_SIZE;
 
 // UI DOM ELEMENTS
-let rowSlider;
-let columnSlider;
-// let shapeSizeSlider;
-
 let primaryColorPicker;
 let secondaryColorPicker;
 let backgroundColorPicker;
 
+let rowSlider;
+let columnSlider;
+// let shapeSizeSlider; // taken out due to difficulties constraining to window
+
+let saveButton;
+
 // THEMES
 let dynamicTheme = [];
+// let refreshing;
+// let popping;
+// let blazing;
 let PALETTE = [];
 
 // LAYOUT
@@ -46,19 +51,14 @@ function setup() {
   const ui = createDiv().class("control-panel");
 
   // labels
-  const rowLabel = createDiv("ROWS").class("label").parent(ui);
-  const colLabel = createDiv("COLUMNS").class("label").parent(ui);
-
   const primaryLabel = createDiv("PRIMARY COLOR").class("label").parent(ui);
   const secondaryLabel = createDiv("SECONDARY COLOR").class("label").parent(ui);
   const backgroundLabel = createDiv("BACKGROUND COLOR")
     .class("label")
     .parent(ui);
 
-  // sliders
-  rowSlider = createSlider(2, maxRows, 10, 1).class("slider").parent(rowLabel);
-  colSlider = createSlider(2, maxCols, 10, 1).class("slider").parent(colLabel);
-  // shapeSizeSlider = createSlider(10, 30, 10, 1).class("slider").parent(ui);
+  const rowLabel = createDiv("ROWS").class("label").parent(ui);
+  const colLabel = createDiv("COLUMNS").class("label").parent(ui);
 
   // color pickers
   primaryColorPicker = createColorPicker(color(245, 85, 25))
@@ -71,6 +71,14 @@ function setup() {
     .class("color-picker")
     .parent(backgroundLabel);
 
+  // sliders
+  rowSlider = createSlider(2, maxRows, 10, 1).class("slider").parent(rowLabel);
+  colSlider = createSlider(2, maxCols, 10, 1).class("slider").parent(colLabel);
+  // shapeSizeSlider = createSlider(10, 30, 10, 1).class("slider").parent(ui);
+
+  saveButton = createButton("SAVE SVG").parent(ui);
+  saveButton.mousePressed(saveSVG);
+
   // LAYOUT
   createCanvas(totalX, totalY, SVG);
 
@@ -79,19 +87,20 @@ function setup() {
   angleMode(DEGREES);
 
   // COLOR
-  // const theme1 = [
+  // may be used to show preset themes...
+  // refreshing = [
   //   color(245, 85, 25), // dark blue
   //   color(160, 55, 75), // green
   //   color(125, 25, 100), // light green
   // ];
 
-  // const theme2 = [
+  // popping = [
   //   color(275, 85, 30), // purple
   //   color(312, 30, 80), // pink
   //   color(288, 10, 100), // lavender
   // ];
 
-  // const theme3 = [
+  // blazing = [
   //   color(25, 85, 70), // orange
   //   color(58, 85, 70), // yellow
   //   color(65, 30, 85), // light yellow
@@ -109,18 +118,13 @@ function draw() {
 
   // COLOR
   calculatePalette();
+
   background(PALETTE[2]);
   noFill();
   noStroke();
 
   // SHAPE GRID
-  shapes.forEach((shape) => {
-    push();
-    translate(shape.x, shape.y);
-    shape.update();
-    shape.render();
-    pop();
-  });
+  renderShapes();
 
   // BORDER
   push();
@@ -130,48 +134,10 @@ function draw() {
   rect(0, 0, totalX - MARGIN, totalY - MARGIN);
   pop();
 
+  // console.log(frameRate());
+
   // uncomment to stop interactivity
   // noLoop();
-}
-
-function createGrid(rows, cols) {
-  for (let x = 0; x < rows; x++) {
-    for (let y = 0; y < cols; y++) {
-      const posX = START + x * GRIDBOX;
-      const posY = START + y * GRIDBOX;
-
-      push();
-      drawShape(posX, posY);
-      pop();
-    }
-  }
-}
-
-function drawShape(posX, posY) {
-  const color = getRandomFromPalette();
-
-  noFill();
-  noStroke();
-
-  if (randomSelectTwo()) {
-    fill(color);
-  } else {
-    stroke(color);
-  }
-
-  const shapeSelection = floor(random(3));
-
-  translate(posX, posY);
-  if (shapeSelection == 0) {
-    rect(0, 0, SHAPE_SIZE);
-  } else if (shapeSelection == 1) {
-    ellipse(0, 0, SHAPE_SIZE);
-  } else if (shapeSelection == 2) {
-    applyRotation();
-    rightTriangle(0, 0, SHAPE_SIZE);
-  } else {
-    // skip drawing a shape
-  }
 }
 
 function generateShapes() {
@@ -187,12 +153,21 @@ function generateShapes() {
   }
 }
 
+function renderShapes() {
+  shapes.forEach((shape) => {
+    push();
+    translate(shape.x, shape.y);
+    shape.update();
+    shape.render();
+    pop();
+  });
+}
+
 function calculateLayout() {
   ROWS = rowSlider.value();
   COLS = colSlider.value();
 
   if (evaluateResize()) {
-    console.log("resize");
     generateShapes();
   }
 

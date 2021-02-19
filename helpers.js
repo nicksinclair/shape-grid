@@ -53,3 +53,15 @@ function applyRotation() {
   const angle = floor(random(4));
   rotate(angle * 90);
 }
+
+// Handles logic for selecting shape to render
+function renderShape(shape, shapeSize, transform) {
+  if (shape === 0) {
+    rect(0, 0, shapeSize);
+  } else if (shape === 1) {
+    ellipse(0, 0, shapeSize);
+  } else if (shape === 2) {
+    rotate(transform * 90);
+    rightTriangle(0, 0, shapeSize);
+  }
+}
